@@ -42,13 +42,37 @@ int i2c_read(int bus, int addr, int reg)
 	}
 }
 
+int smbus_read(int bus, int addr, int reg)
+{
+	int file;		/* fd */
+	char filename[40];
+	int ret;
+	__s32 res;
+
+	sprintf(filename,"/dev/i2c-%d", bus);
+	if ((file = open(filename, O_RDWR)) < 0) {
+		return errno;
+	}
+
+	if (ioctl(file, I2C_SLAVE, addr) < 0) {
+		return errno;
+	}
+
+	res = i2c_smbus_read_word_data(file, reg);
+	if (res < 0) {
+		return 1;
+	} else {
+		printf("%d\n", res);
+	}
+}
+
 int i2c_scan(bus)
 {
 	int i;
 	for (i = 0; i <= 0xFF; i++)
 	{
 		printf("%d\n", i);
-		if (i2c_read(4, i, 0) == 0)
+		if (smbus_read(4, i, 0) == 0)
 		{
 			printf("OK: %d", i);
 		}
@@ -92,7 +116,7 @@ int main(int argc, char *argv[])
 	bus = strtol(argv[1], &endptr, 10);
 	// bus = atoi(argv[1]);
 
-	printf("Scanning bus: %d", bus + 1);
+	printf("Scanning bus: %d\n", bus);
 	i2c_scan(bus);
 }
 
