@@ -1,7 +1,3 @@
-/*extern "C" {
-	#include <glib.h>
-} */
-#include <glib/gprintf.h>
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
@@ -16,7 +12,6 @@
 void sensors_ADC_init(void) {
     int file;
     char filename[40];
-    const gchar *buffer;
     int addr = 0b00101001;        // The I2C address of the ADC
 
     sprintf(filename,"/dev/i2c-2");
@@ -42,9 +37,7 @@ void sensors_ADC_init(void) {
         if (read(file, buf, 2) != 2) {
             /* ERROR HANDLING: i2c transaction failed */
             printf("Failed to read from the i2c bus.\n");
-            buffer = errno; //g_strerror(errno);
-            printf(buffer);
-            printf("\n\n");
+            printf("Error: %d\n", errno);
         } else {
             data = (float)((buf[0] & 0b00001111)<<8)+buf[1];
             data = data/4096*5;
@@ -60,9 +53,7 @@ void sensors_ADC_init(void) {
     if (write(file, buf, 1) != 1) {
         /* ERROR HANDLING: i2c transaction failed */
         printf("Failed to write to the i2c bus.\n");
-        buffer = errno; //g_strerror(errno);
-        printf(buffer);
-        printf("\n\n");
+        printf("Error: %d\n", errno);
     }
 }
 
