@@ -85,6 +85,14 @@ int main(int argc, char *argv[])
 	}
 
 	//i2c_read(4, 0b11111110, 0);
-	i2c_scan(argv[1]);
+	//
+	int bus;
+	char *str, *endptr;
+
+	bus = strtol(argv[1], &endptr, 10);
+	// bus = atoi(argv[1]);
+
+	printf("Scanning bus: %d", bus + 1);
+	i2c_scan(bus);
 }
 
