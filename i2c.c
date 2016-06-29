@@ -33,7 +33,7 @@ int i2c_read(int bus, int addr, int reg)
 			return errno;
 		} else {
 			int j;
-			for (j = 0; j<10; j++)
+			for (j = 0; j < 10; j++)
 			{
 				printf("%d: %d", j, buf[j]);
 			}
@@ -47,6 +47,7 @@ int i2c_scan(bus)
 	int i;
 	for (i = 0; i <= 0xFF; i++)
 	{
+		printf("%d\n", i);
 		if (i2c_read(4, i, 0) == 0)
 		{
 			printf("OK: %d", i);
@@ -84,6 +85,6 @@ int main(int argc, char *argv[])
 	}
 
 	//i2c_read(4, 0b11111110, 0);
-	i2c_scan(4);
+	i2c_scan(argv[1]);
 }
 
