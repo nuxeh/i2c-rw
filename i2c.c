@@ -9,15 +9,14 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-void sensors_ADC_init(void)
+void i2c_read(int bus, int addr, int reg)
 {
-	int file;
+	int file;		/* fd */
 	char filename[40];
-	int addr = 0b00101001;		// The I2C address of the ADC
 
-	sprintf(filename,"/dev/i2c-2");
+	sprintf(filename,"/dev/i2c-%d", bus);
 	if ((file = open(filename, O_RDWR)) < 0) {
-		printf("Failed to open the bus.");
+		printf("Failed to open the bus.\n");
 		/* ERROR HANDLING; you can check errno to see what went wrong */
 		exit(1);
 	}
@@ -29,7 +28,6 @@ void sensors_ADC_init(void)
 	}
 
 	char buf[10] = {0};
-	float data;
 	char channel;
 
 	int i;
@@ -40,15 +38,23 @@ void sensors_ADC_init(void)
 			printf("Failed to read from the i2c bus.\n");
 			printf("Error: %d\n", errno);
 		} else {
-			data = (float)((buf[0] & 0b00001111)<<8)+buf[1];
-			data = data/4096*5;
-			channel = ((buf[0] & 0b00110000)>>4);
-			printf("Channel %02d Data:  %04f\n", channel, data);
+			int j;
+			for (j = 0; j<10; j++)
+			{
+				printf("%d: %d", j, buf[j]);
+			}
 		}
 	}
+}
+
+int i2c_write(void)
+{
 
 	//unsigned char reg = 0x10; // Device register to access
 	//buf[0] = reg;
+	char buf[10] = {0};
+	int file;		/* fd */
+	char filename[40];
 	buf[0] = 0b11110000;
 
 	if (write(file, buf, 1) != 1) {
@@ -65,10 +71,11 @@ int help(void)
 
 int main(int argc, char *argv[])
 {
-	if (argc < 2) {
+	if (argc < 1) {
 		help();
 		exit(1);
 	}
-	//sensors_ADC_init();
+
+	i2c_read(4, 0b11111110, 0);
 }
 
