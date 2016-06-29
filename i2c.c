@@ -19,13 +19,13 @@ int i2c_read(int bus, int addr, int reg)
 	if ((file = open(filename, O_RDWR)) < 0) {
 		printf("Failed to open the bus.\n");
 		/* ERROR HANDLING; you can check errno to see what went wrong */
-		ret = errno;
+		return errno;
 	}
 
 	if (ioctl(file, I2C_SLAVE, addr) < 0) {
 		printf("Failed to acquire bus access and/or talk to slave.\n");
 		/* ERROR HANDLING; you can check errno to see what went wrong */
-		ret = errno;
+		return errno;
 	}
 
 	char buf[10] = {0};
@@ -38,18 +38,16 @@ int i2c_read(int bus, int addr, int reg)
 			/* ERROR HANDLING: i2c transaction failed */
 			printf("Failed to read from the i2c bus.\n");
 			printf("Error: %d\n", errno);
-			ret = errno;
+			return errno;
 		} else {
 			int j;
 			for (j = 0; j<10; j++)
 			{
 				printf("%d: %d", j, buf[j]);
 			}
-			ret = 0;
+			return 0;
 		}
 	}
-
-	return ret;
 }
 
 int i2c_scan(bus)
