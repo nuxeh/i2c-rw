@@ -69,10 +69,10 @@ int smbus_read(int bus, int addr, int reg)
 int i2c_scan(bus)
 {
 	int i;
-	for (i = 0; i <= 0xFF; i++)
+	for (i = 0; i <= 0x7F; i++)
 	{
 		printf("%d\n", i);
-		if (smbus_read(4, i, 0) == 0)
+		if (smbus_read(bus, i, 0) == 0)
 		{
 			printf("OK: %d", i);
 		}
