@@ -57,6 +57,17 @@ void sensors_ADC_init(void) {
     }
 }
 
-int main(void) {
-	sensors_ADC_init();
+int help(void)
+{
+	printf("Not enough arguments\n");
 }
+
+int main(int argc, char *argv[])
+{
+	if (argc < 2) {
+	       help();
+	       exit(1);
+	}
+	//sensors_ADC_init();
+}
+
