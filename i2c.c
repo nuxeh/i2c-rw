@@ -9,40 +9,57 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-void i2c_read(int bus, int addr, int reg)
+int i2c_read(int bus, int addr, int reg)
 {
 	int file;		/* fd */
 	char filename[40];
+	int ret;
 
 	sprintf(filename,"/dev/i2c-%d", bus);
 	if ((file = open(filename, O_RDWR)) < 0) {
 		printf("Failed to open the bus.\n");
 		/* ERROR HANDLING; you can check errno to see what went wrong */
-		exit(1);
+		ret = errno;
 	}
 
 	if (ioctl(file, I2C_SLAVE, addr) < 0) {
 		printf("Failed to acquire bus access and/or talk to slave.\n");
 		/* ERROR HANDLING; you can check errno to see what went wrong */
-		exit(1);
+		ret = errno;
 	}
 
 	char buf[10] = {0};
 	char channel;
 
 	int i;
-	for(i = 0; i<4; i++) {
+	for(i = 0; i < 4; i++) {
 		// Using I2C Read
 		if (read(file, buf, 2) != 2) {
 			/* ERROR HANDLING: i2c transaction failed */
 			printf("Failed to read from the i2c bus.\n");
 			printf("Error: %d\n", errno);
+			ret = errno;
 		} else {
 			int j;
 			for (j = 0; j<10; j++)
 			{
 				printf("%d: %d", j, buf[j]);
 			}
+			ret = 0;
+		}
+	}
+
+	return ret;
+}
+
+int i2c_scan(bus)
+{
+	int i;
+	for (i = 0; i <= 0xFF; i++)
+	{
+		if (i2c_read(4, i, 0) == 0)
+		{
+			printf("OK: %d", i);
 		}
 	}
 }
@@ -76,6 +93,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	i2c_read(4, 0b11111110, 0);
+	//i2c_read(4, 0b11111110, 0);
+	i2c_scan(4);
 }
 
